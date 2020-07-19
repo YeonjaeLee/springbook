@@ -1,51 +1,97 @@
 package user.dao;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.context.support.GenericXmlApplicationContext;
-import user.domain.Account;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import user.domain.User;
-
 import java.sql.SQLException;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "/applicationContext.xml")
+@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class })
 public class UserDaoTest {
-    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+    @Autowired
+    private ApplicationContext context;
+    @Autowired
+    private UserDao dao;
+    User user1;
+    User user2;
+    User user3;
 
-        ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
+    @Before
+    public void setUp(){
+//        System.out.println(this.context);
+//        System.out.println(this);
+//        this.dao = this.context.getBean("userDao", UserDao.class);
+        this.user1 = new User("aaa", "하나", "springno1");
+        this.user2 = new User("bbb", "둘", "springno2");
+        this.user3 = new User("ccc", "셋", "springno3");
+    }
 
-        UserDao dao = context.getBean("userDao", UserDao.class);
+    @Test
+    public void addAndGet() throws SQLException, ClassNotFoundException {
+        dao.deleteAll();
+        assertThat(dao.getCount(), is(0));
 
-        User user = new User();
-        user.setId("yeonjae");
-        user.setName("이연재");
-        user.setPassword("1234");
+        dao.add(user1);
+        assertThat(dao.getCount(), is(1));
 
-        dao.add(user);
+        System.out.println(user1.getId() + " users 등록 성공");
 
-        System.out.println(user.getId() + " 등록 성공");
+        User user2 = dao.get(user1.getId());
 
-        User user2 = dao.get(user.getId());
-        System.out.println(user2.getName());
-        System.out.println(user2.getPassword());
-
-        System.out.println(user2.getId() + " 조회 성공");
+        assertThat(user2.getName(), is(user1.getName()));
+        assertThat(user2.getPassword(), is(user1.getPassword()));
 
         /////////////////////////////////////////////////////////////
+//        ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
+//        AccountDao accountDao = context.getBean("accountDao", AccountDao.class);
+//
+//        accountDao.deleteAll();
+//        assertThat(accountDao.getCount(), is(0));
+//
+//        Account account = new Account(user.getId(), 123546);
+//
+//        accountDao.add(account);
+//        assertThat(accountDao.getCount(), is(1));
+//
+//        System.out.println(account.getId() + " accounts 등록 성공");
+//
+//        Account account2 = accountDao.get(account.getId());
+//
+//        assertThat(account2.getCash(), is(account.getCash()));
+    }
 
-        AccountDao accountDao = context.getBean("accountDao", AccountDao.class);
+    @Test
+    public void count() throws SQLException{
+        dao.deleteAll();
+        assertThat(dao.getCount(), is(0));
 
-        Account account = new Account();
-        account.setId(user.getId());
-        account.setCash(123546);
+        dao.add(user1);
+        assertThat(dao.getCount(), is(1));
 
-        accountDao.add(account);
+        dao.add(user2);
+        assertThat(dao.getCount(), is(2));
 
-        System.out.println(account.getId() + " 등록 성공");
+        dao.add(user3);
+        assertThat(dao.getCount(), is(3));
+    }
 
-        Account account2 = accountDao.get(account.getId());
-        System.out.println(account2.getCash());
+    @Test(expected = EmptyResultDataAccessException.class)
+    public void getUserFailure() throws SQLException{
+        dao.deleteAll();
+        assertThat(dao.getCount(), is(0));
 
-        System.out.println(account2.getId() + " 조회 성공");
+        dao.get("unknown_id");
     }
 }

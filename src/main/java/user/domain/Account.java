@@ -4,6 +4,13 @@ public class Account {
     String id;
     int cash;
 
+    public Account(String id, int cash){
+        this.id = id;
+        this.cash = cash;
+    }
+
+    public Account(){ }
+
     public String getId() {
         return id;
     }
