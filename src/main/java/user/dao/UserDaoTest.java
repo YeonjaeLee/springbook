@@ -30,7 +30,6 @@ public class UserDaoTest {
     @Autowired
     private ApplicationContext context;
     UserDao dao;
-    JdbcContext jdbcContext;
     User user1;
     User user2;
     User user3;
