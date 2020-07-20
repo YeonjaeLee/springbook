@@ -28,14 +28,16 @@ public class UserDaoTest {
     @Autowired
     private ApplicationContext context;
     UserDao dao;
+    JdbcContext jdbcContext;
     User user1;
     User user2;
     User user3;
 
     @Before
     public void setUp(){
-        dao = new UserDao();
         DataSource dataSource = new SingleConnectionDataSource("jdbc:mysql://localhost/testdb?characterEncoding=euc_kr", "root", "1234", true);
+
+        dao = new UserDao();
         dao.setDataSource(dataSource);
 
         this.user1 = new User("aaa", "하나", "springno1");
@@ -44,7 +46,7 @@ public class UserDaoTest {
     }
 
     @Test
-    public void addAndGet() throws SQLException, ClassNotFoundException {
+    public void addAndGet() throws SQLException {
         dao.deleteAll();
         assertThat(dao.getCount(), is(0));
 
