@@ -3,26 +3,22 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-<!--    <bean id="DconnectionMaker" class="user.dao.DConnectionMaker" />-->
-<!--    <bean id="NconnectionMaker" class="user.dao.NConnectionMaker" />-->
-
-<!--    <bean id="userDao" class="user.dao.UserDao">-->
-<!--        <property name="connectionMaker" ref="DconnectionMaker"/>-->
-<!--    </bean>-->
-<!--    <bean id="accountDao" class="user.dao.AccountDao">-->
-<!--        <property name="connectionMaker" ref="DconnectionMaker"/>-->
-<!--    </bean>-->
-
-    <bean id="userDao" class="user.dao.UserDao">
-        <property name="dataSource" ref="dataSource1"/>
+    <bean id="userDao" class="user.dao.UserDaoJdbc">
+        <property name="dataSource" ref="dataSource"/>
     </bean>
     <bean id="accountDao" class="user.dao.AccountDao">
-        <property name="dataSource" ref="dataSource1"/>
+        <property name="dataSource" ref="dataSource"/>
     </bean>
     <bean id="jdbcContext" class="user.dao.JdbcContext">
-        <property name="dataSource" ref="dataSource1" />
+        <property name="dataSource" ref="dataSource" />
     </bean>
 
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost/testdb?characterEncoding=euc_kr"/>
+        <property name="username" value="root"/>
+        <property name="password" value="1234"/>
+    </bean>
     <bean id="dataSource1" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
         <property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost/testdb?characterEncoding=euc_kr"/>

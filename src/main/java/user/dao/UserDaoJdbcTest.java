@@ -5,8 +5,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
+import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -19,6 +22,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -26,20 +30,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ContextConfiguration(locations = "/test_applicationContext.xml")
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class })
 @DirtiesContext
-public class UserDaoTest {
+public class UserDaoJdbcTest {
     @Autowired
     private ApplicationContext context;
+    @Autowired
     UserDao dao;
     User user1;
     User user2;
     User user3;
+    // 학습TEST
+    @Autowired
+    DataSource dataSource;
 
     @Before
     public void setUp(){
         DataSource dataSource = new SingleConnectionDataSource("jdbc:mysql://localhost/testdb?characterEncoding=euc_kr", "root", "1234", true);
-
-        dao = new UserDao();
-        dao.setDataSource(dataSource);
 
         this.user1 = new User("aaa", "하나", "springno1");
         this.user2 = new User("bbb", "둘", "springno2");
@@ -109,6 +114,32 @@ public class UserDaoTest {
         checkSameUser(user1, users3.get(0));
         checkSameUser(user2, users3.get(1));
         checkSameUser(user3, users3.get(2));
+    }
+
+    // 학습TEST
+    @Test(expected = DuplicateKeyException.class)//(expected = DataAccessException.class)
+    public void duplicateKey(){
+        dao.deleteAll();
+
+        dao.add(user1);
+        dao.add(user1);
+    }
+
+    // 학습TEST
+    @Test
+    public void sqlExceptionTranslate() {
+        dao.deleteAll();
+
+        try {
+            dao.add(user1);
+            dao.add(user1);
+        }
+        catch (DuplicateKeyException ex) {
+            SQLException sqlException = (SQLException)ex.getRootCause();
+            SQLExceptionTranslator set = new SQLErrorCodeSQLExceptionTranslator(this.dataSource);
+
+            assertThat(set.translate(null, null, sqlException), instanceOf(DuplicateKeyException.class));
+        }
     }
 
     private void checkSameUser(User user1, User user2) {
