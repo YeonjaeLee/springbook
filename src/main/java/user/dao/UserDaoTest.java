@@ -16,6 +16,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import user.domain.Level;
 import user.domain.User;
 
 import javax.sql.DataSource;
@@ -29,8 +30,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/test_applicationContext.xml")
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class })
-@DirtiesContext
-public class UserDaoJdbcTest {
+//@DirtiesContext
+public class UserDaoTest {
     @Autowired
     private ApplicationContext context;
     @Autowired
@@ -44,11 +45,11 @@ public class UserDaoJdbcTest {
 
     @Before
     public void setUp(){
-        DataSource dataSource = new SingleConnectionDataSource("jdbc:mysql://localhost/testdb?characterEncoding=euc_kr", "root", "1234", true);
+//        DataSource dataSource = new SingleConnectionDataSource("jdbc:mysql://localhost/testdb?characterEncoding=euc_kr", "root", "1234", true);
 
-        this.user1 = new User("aaa", "하나", "springno1");
-        this.user2 = new User("bbb", "둘", "springno2");
-        this.user3 = new User("ccc", "셋", "springno3");
+        this.user1 = new User("aaa", "하나", "springno1", Level.BASIC, 1, 0);
+        this.user2 = new User("bbb", "둘", "springno2", Level.SILVER, 55, 10);
+        this.user3 = new User("ccc", "셋", "springno3", Level.GOLD, 100, 40);
     }
 
     @Test
@@ -58,13 +59,16 @@ public class UserDaoJdbcTest {
 
         dao.add(user1);
         assertThat(dao.getCount(), is(1));
+        dao.add(user2);
+        assertThat(dao.getCount(), is(2));
 
         System.out.println(user1.getId() + " users 등록 성공");
+        System.out.println(user2.getId() + " users 등록 성공");
 
-        User user11 = dao.get(user1.getId());
-
-        assertThat(user11.getName(), is(user1.getName()));
-        assertThat(user11.getPassword(), is(user1.getPassword()));
+        User userget1 = dao.get(user1.getId());
+        checkSameUser(userget1, user1);
+        User userget2 = dao.get(user2.getId());
+        checkSameUser(userget2, user2);
     }
 
     @Test
@@ -116,6 +120,26 @@ public class UserDaoJdbcTest {
         checkSameUser(user3, users3.get(2));
     }
 
+    @Test
+    public void update() {
+        dao.deleteAll();
+
+        dao.add(user1);
+        dao.add(user2);
+
+        user1.setName("이연재");
+        user1.setPassword("1234");
+        user1.setLevel(Level.GOLD);
+        user1.setLogin(1000);
+        user1.setRecommend(999);
+        dao.update(user1);
+
+        User user1update = dao.get(user1.getId());
+        checkSameUser(user1, user1update);
+        User user2same = dao.get(user2.getId());
+        checkSameUser(user2, user2same);
+    }
+
     // 학습TEST
     @Test(expected = DuplicateKeyException.class)//(expected = DataAccessException.class)
     public void duplicateKey(){
@@ -146,5 +170,8 @@ public class UserDaoJdbcTest {
         assertThat(user1.getId(), is(user2.getId()));
         assertThat(user1.getName(), is(user2.getName()));
         assertThat(user1.getPassword(), is(user2.getPassword()));
+        assertThat(user1.getLevel(), is(user2.getLevel()));
+        assertThat(user1.getLogin(), is(user2.getLogin()));
+        assertThat(user1.getRecommend(), is(user2.getRecommend()));
     }
 }
