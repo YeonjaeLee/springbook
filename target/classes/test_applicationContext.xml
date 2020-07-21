@@ -6,6 +6,7 @@
     <bean id="userService" class="user.service.UserService">
         <property name="userDao" ref="userDao"/>
         <property name="transactionManager" ref="transactionManager"/>
+        <property name="mailSender" ref="mailSender"/>
     </bean>
     <bean id="userDao" class="user.dao.UserDaoJdbc">
         <property name="dataSource" ref="dataSource"/>
@@ -16,9 +17,16 @@
     <bean id="jdbcContext" class="user.dao.JdbcContext">
         <property name="dataSource" ref="dataSource" />
     </bean>
+<!--    트랙잭션 이용 방식 수정    -->
+<!--    JTA : class="org.springframework.transaction.jta.JtaTransactionManager"    -->
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>
+<!--    TEST mail send-->
+    <bean id="mailSender" class="user.service.DummyMailSender"/>
+    <!--    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">-->
+<!--        <property name="host" value="mail.server.com"/>-->
+<!--    </bean>-->
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
         <property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>

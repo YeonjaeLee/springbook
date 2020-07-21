@@ -47,9 +47,9 @@ public class UserDaoTest {
     public void setUp(){
 //        DataSource dataSource = new SingleConnectionDataSource("jdbc:mysql://localhost/testdb?characterEncoding=euc_kr", "root", "1234", true);
 
-        this.user1 = new User("aaa", "하나", "springno1", Level.BASIC, 1, 0);
-        this.user2 = new User("bbb", "둘", "springno2", Level.SILVER, 55, 10);
-        this.user3 = new User("ccc", "셋", "springno3", Level.GOLD, 100, 40);
+        this.user1 = new User("aaa", "하나", "springno1", Level.BASIC, 1, 0, "aaa@gmail.com");
+        this.user2 = new User("bbb", "둘", "springno2", Level.SILVER, 55, 10, "bbb@gmail.com");
+        this.user3 = new User("ccc", "셋", "springno3", Level.GOLD, 100, 40, "ccc@gmail.com");
     }
 
     @Test
@@ -132,6 +132,7 @@ public class UserDaoTest {
         user1.setLevel(Level.GOLD);
         user1.setLogin(1000);
         user1.setRecommend(999);
+        user1.setEmail("yeonjae@gmail.com");
         dao.update(user1);
 
         User user1update = dao.get(user1.getId());
@@ -173,5 +174,6 @@ public class UserDaoTest {
         assertThat(user1.getLevel(), is(user2.getLevel()));
         assertThat(user1.getLogin(), is(user2.getLogin()));
         assertThat(user1.getRecommend(), is(user2.getRecommend()));
+        assertThat(user1.getEmail(), is(user2.getEmail()));
     }
 }
