@@ -60,6 +60,7 @@
     <aop:config>
         <aop:pointcut id="transactionPointcut" expression="execution(* *..*ServiceImpl.upgrade*(..))"/>
         <aop:advisor advice-ref="transactionAdvice" pointcut-ref="transactionPointcut"/>
+        <aop:advisor advice-ref="batchAdvice" pointcut="execution(* *..*BatchJob.*(..))"/>
     </aop:config>
 
     <tx:advice id="transactionAdvice" transaction-manager="transactionManager">
@@ -69,16 +70,12 @@
             <tx:method name="*" propagation="REQUIRED"/>
         </tx:attributes>
     </tx:advice>
-<!--    <bean id="transactionAdvice" class="org.springframework.transaction.interceptor.TransactionInterceptor">-->
-<!--        <property name="transactionManager" ref="transactionManager"/>-->
-<!--        <property name="transactionAttributes">-->
-<!--            <props>-->
-<!--                <prop key="get*">PROPAGATION_REQUIRED,readOnly,timeout_30</prop>-->
-<!--                <prop key="upgrade*">PROPAGATION_REQUIRED,ISOLATION_SERIALIZABLE</prop>-->
-<!--                <prop key="*">PROPAGATION_REQUIRED</prop>-->
-<!--            </props>-->
-<!--        </property>-->
-<!--    </bean>-->
+    <tx:advice id="batchAdvice">
+        <tx:attributes>
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="*"/>
+        </tx:attributes>
+    </tx:advice>
 
     <!--    테스트용 UserService 등록-->
     <bean id="testUserService" class="user.service.UserServiceTest$TestUserService" parent="userService"/>
