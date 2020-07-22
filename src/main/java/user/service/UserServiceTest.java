@@ -41,7 +41,9 @@ public class UserServiceTest {
     @Autowired
     ApplicationContext context;
     @Autowired
-    UserServiceImpl userServiceImpl;
+    UserService userService;
+    @Autowired
+    UserService testUserService;
     @Autowired
     UserDao userDao;
     @Autowired
@@ -63,7 +65,7 @@ public class UserServiceTest {
 
     @Test
     public void bean() {
-        assertThat(this.userServiceImpl, is(notNullValue()));
+        assertThat(this.userService, is(notNullValue()));
     }
 
     @Test
@@ -74,8 +76,8 @@ public class UserServiceTest {
         User userWithoutLevel = users.get(0);
         userWithLevel.setLevel(null);
 
-        userServiceImpl.add(userWithLevel);
-        userServiceImpl.add(userWithoutLevel);
+        userService.add(userWithLevel);
+        userService.add(userWithoutLevel);
 
         User userWithLevelRead = userDao.get(userWithLevel.getId());
         User userWithoutLevelRead = userDao.get(userWithoutLevel.getId());
@@ -133,22 +135,12 @@ public class UserServiceTest {
 
     // levelupgrade 도중 예외처리 발생시 모든 사용자 upgrade 취소 TEST
     @Test
-    @DirtiesContext
     public void upgradeAllOrNothing() throws Exception {
-        TestUserService testUserService = new TestUserService(users.get(3).getId());
-        testUserService.setUserDao(userDao);
-        testUserService.setMailSender(mailSender);
-
-        // 다이내믹 프록시 적용 트랜잭션 TEST
-        ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
-        txProxyFactoryBean.setTarget(testUserService);
-        UserService txUserService = (UserService) txProxyFactoryBean.getObject();
-
         userDao.deleteAll();
         for(User user : users) userDao.add(user);
 
         try {
-            txUserService.upgradeLevels();
+            this.testUserService.upgradeLevels();
             fail("TestUserServiceException expected");
         }
         catch (TestUserServiceException e) {}
@@ -187,12 +179,8 @@ public class UserServiceTest {
         assertThat(mailMessages.get(1).getTo()[0], is(users.get(3).getEmail()));
     }
 
-    static class TestUserService extends UserServiceImpl {
-        private String id;
-
-        private TestUserService(String id) {
-            this.id = id;
-        }
+    static class TestUserServiceImpl extends UserServiceImpl {
+        private String id = "ddd";
 
         protected void upgradeLevel(User user) {
             if(user.getId().equals(this.id)) throw new TestUserServiceException();

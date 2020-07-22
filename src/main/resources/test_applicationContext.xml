@@ -3,50 +3,6 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="userServiceImpl" class="user.service.UserServiceImpl">
-        <property name="userDao" ref="userDao"/>
-        <property name="mailSender" ref="mailSender"/>
-    </bean>
-    <bean id="userDao" class="user.dao.UserDaoJdbc">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-    <bean id="accountDao" class="user.dao.AccountDao">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-    <bean id="jdbcContext" class="user.dao.JdbcContext">
-        <property name="dataSource" ref="dataSource" />
-    </bean>
-<!--    트랙잭션 이용 방식 수정    -->
-<!--    JTA : class="org.springframework.transaction.jta.JtaTransactionManager"    -->
-    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-<!--    TEST mail send-->
-    <bean id="mailSender" class="user.service.DummyMailSender"/>
-    <!--    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">-->
-<!--        <property name="host" value="mail.server.com"/>-->
-<!--    </bean>-->
-
-    <!--    트랜잭션 어드바이스 빈 설정-->
-    <bean id="transactionAdvice" class="user.service.TransactionAdvice">
-        <property name="transactionManager" ref="transactionManager"/>
-    </bean>
-    <bean id="transactionPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
-        <property name="mappedName" value="upgrade*"/>
-    </bean>
-    <bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
-        <property name="advice" ref="transactionAdvice"/>
-        <property name="pointcut" ref="transactionPointcut"/>
-    </bean>
-    <bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="userServiceImpl"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionAdvisor</value>
-            </list>
-        </property>
-    </bean>
-
     <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
         <property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost/testdb?characterEncoding=euc_kr"/>
@@ -65,6 +21,50 @@
         <property name="username" value="root"/>
         <property name="password" value="1234"/>
     </bean>
+
+    <bean id="userDao" class="user.dao.UserDaoJdbc">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="accountDao" class="user.dao.AccountDao">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="jdbcContext" class="user.dao.JdbcContext">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    <bean id="userService" class="user.service.UserServiceImpl">
+        <property name="userDao" ref="userDao"/>
+        <property name="mailSender" ref="mailSender"/>
+    </bean>
+
+    <!--    트랙잭션 이용 방식 수정    -->
+<!--    JTA : class="org.springframework.transaction.jta.JtaTransactionManager"    -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+<!--    TEST mail send-->
+    <bean id="mailSender" class="user.service.DummyMailSender"/>
+    <!--    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">-->
+<!--        <property name="host" value="mail.server.com"/>-->
+<!--    </bean>-->
+
+    <!--    트랜잭션 어드바이스 빈 설정-->
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+
+    <bean id="transactionPointcut" class="learningtest.jdk.proxy.NameMatchClassMethodPointcut">
+        <property name="mappedClassName" value="*ServiceImpl"/>
+        <property name="mappedName" value="upgrade*"/>
+    </bean>
+    <bean id="transactionAdvice" class="user.service.TransactionAdvice">
+        <property name="transactionManager" ref="transactionManager"/>
+    </bean>
+    <bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+        <property name="advice" ref="transactionAdvice"/>
+        <property name="pointcut" ref="transactionPointcut"/>
+    </bean>
+
+    <!--    테스트용 UserService 등록-->
+    <bean id="testUserService" class="user.service.UserServiceTest$TestUserServiceImpl" parent="userService"/>
+
 
 <!--    MessageFactoryBean test-->
     <bean id="message" class="learningtest.spring.factorybean.MessageFactoryBean">
