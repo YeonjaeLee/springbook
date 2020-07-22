@@ -32,4 +32,9 @@
     <bean id="accountDao" class="user.dao.AccountDao">
         <property name="dataSource" ref="dataSource1"/>
     </bean>
+
+    <!--    MessageFactoryBean test-->
+    <bean id="message" class="learningtest.spring.factorybean.MessageFactoryBean">
+        <property name="text" value="Factory Bean"/>
+    </bean>
 </beans>

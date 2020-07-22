@@ -3,10 +3,10 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="userService" class="user.service.UserServiceTx">
-        <property name="transactionManager" ref="transactionManager"/>
-        <property name="userService" ref="userServiecImpl"/>
-    </bean>
+<!--    <bean id="userService" class="user.service.UserServiceTx">-->
+<!--        <property name="transactionManager" ref="transactionManager"/>-->
+<!--        <property name="userService" ref="userServiecImpl"/>-->
+<!--    </bean>-->
     <bean id="userServiecImpl" class="user.service.UserServiceImpl">
         <property name="userDao" ref="userDao"/>
         <property name="mailSender" ref="mailSender"/>
@@ -48,5 +48,18 @@
         <property name="url" value="jdbc:mysql://localhost/testdb?characterEncoding=euc_kr"/>
         <property name="username" value="root"/>
         <property name="password" value="1234"/>
+    </bean>
+
+<!--    TxProxyFactoryBean-->
+    <bean id="userService" class="user.service.TxProxyFactoryBean">
+        <property name="target" ref="userServiecImpl"/>
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="pattern" value="upgradeLevels"/>
+        <property name="serviceInterface" value="user.service.UserService"/>
+    </bean>
+
+<!--    MessageFactoryBean test-->
+    <bean id="message" class="learningtest.spring.factorybean.MessageFactoryBean">
+        <property name="text" value="Factory Bean"/>
     </bean>
 </beans>
