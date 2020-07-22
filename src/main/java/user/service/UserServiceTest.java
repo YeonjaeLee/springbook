@@ -179,7 +179,7 @@ public class UserServiceTest {
         assertThat(mailMessages.get(1).getTo()[0], is(users.get(3).getEmail()));
     }
 
-    static class TestUserServiceImpl extends UserServiceImpl {
+    static class TestUserService extends UserServiceImpl {
         private String id = "ddd";
 
         protected void upgradeLevel(User user) {
