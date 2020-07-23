@@ -2,7 +2,7 @@
 // �� ������ JAXB(JavaTM Architecture for XML Binding) ���� ���� 2.2.8-b130911.1802 ������ ���� �����Ǿ����ϴ�. 
 // <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a>�� �����Ͻʽÿ�. 
 // �� ������ �����ϸ� �ҽ� ��Ű���� ���������� �� ���� ������ �սǵ˴ϴ�. 
-// ���� ��¥: 2020.07.23 �ð� 10:14:08 PM KST 
+// ���� ��¥: 2020.07.24 �ð� 02:22:35 AM KST 
 //
 
 
@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlRegistry;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the springbook.user.sqlservice.jaxb package. 
+ * generated in the main.java.user.sqlservice.jaxb package. 
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -30,7 +30,7 @@ public class ObjectFactory {
 
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: springbook.user.sqlservice.jaxb
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: main.java.user.sqlservice.jaxb
      * 
      */
     public ObjectFactory() {
