@@ -36,9 +36,17 @@
         <property name="dataSource" ref="dataSource"/>
         <property name="sqlService" ref="sqlService"/>
     </bean>
-    <bean id="sqlService" class="user.sqlservice.XmlSqlService">
-        <property name="sqlmapFile" value="sqlmap.xml"/>
-    </bean>
+<!--    프로퍼티는 자기 자신 참조 가능. 수정자 메소드로 주입만 가능하면 된다.-->
+<!--    <bean id="sqlService" class="user.sqlservice.BaseSqlService">-->
+<!--        <property name="sqlReader" ref="sqlReader"/>-->
+<!--        <property name="sqlRegistry" ref="sqlRegistry"/>-->
+<!--    </bean>-->
+<!--    <bean id="sqlReader" class="user.sqlservice.JaxbXmlSqlReader">-->
+<!--        <property name="sqlmapFile" value="sqlmap.xml"/>-->
+<!--    </bean>-->
+<!--    <bean id="sqlRegistry" class="user.sqlservice.HashMapSqlRegistry">-->
+<!--    </bean>-->
+    <bean id="sqlService" class="user.sqlservice.DefaultSqlService"/>
     <bean id="accountDao" class="user.dao.AccountDao">
         <property name="dataSource" ref="dataSource"/>
     </bean>
@@ -65,6 +73,7 @@
     <!--    트랜잭션 어드바이스 빈 설정-->
     <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
 
+<!--    @PostConstruct  // 빈의 초기화 메소드로 지정-->
     <context:annotation-config/>
     <tx:annotation-driven/>
 <!--    <aop:config>-->
