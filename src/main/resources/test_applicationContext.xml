@@ -2,11 +2,14 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/aop
        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd
        http://www.springframework.org/schema/tx
        http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
@@ -33,7 +36,9 @@
         <property name="dataSource" ref="dataSource"/>
         <property name="sqlService" ref="sqlService"/>
     </bean>
-    <bean id="sqlService" class="user.sqlservice.XmlSqlService"/>
+    <bean id="sqlService" class="user.sqlservice.XmlSqlService">
+        <property name="sqlmapFile" value="sqlmap.xml"/>
+    </bean>
     <bean id="accountDao" class="user.dao.AccountDao">
         <property name="dataSource" ref="dataSource"/>
     </bean>
@@ -60,6 +65,8 @@
     <!--    트랜잭션 어드바이스 빈 설정-->
     <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
 
+<!--    @PostConstruct  // 빈의 초기화 메소드로 지정-->
+    <context:annotation-config/>
     <tx:annotation-driven/>
 <!--    <aop:config>-->
 <!--        <aop:pointcut id="transactionPointcut" expression="bean(*Service)"/>-->

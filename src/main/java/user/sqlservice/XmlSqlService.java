@@ -4,6 +4,7 @@ import user.dao.UserDao;
 import user.sqlservice.jaxb.SqlType;
 import user.sqlservice.jaxb.Sqlmap;
 
+import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -12,14 +13,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class XmlSqlService implements SqlService {
+    private String sqlmapFile;
     private Map<String, String> sqlMap = new HashMap<String, String>();
 
-    public XmlSqlService() {
+    public void setSqlmapFile(String sqlmapFile) {
+        this.sqlmapFile = sqlmapFile;
+    }
+
+    @PostConstruct  // 빈의 초기화 메소드로 지정
+    public void loadSql() {
         String contextPath = Sqlmap.class.getPackage().getName();
         try {
             JAXBContext context = JAXBContext.newInstance(contextPath);
             Unmarshaller unmarshaller = context.createUnmarshaller();
-            InputStream is = UserDao.class.getResourceAsStream("sqlmap.xml");
+            InputStream is = UserDao.class.getResourceAsStream(this.sqlmapFile);
             Sqlmap sqlmap = (Sqlmap)unmarshaller.unmarshal(is);
 
             for(SqlType sql : sqlmap.getSql()) {
@@ -28,6 +35,10 @@ public class XmlSqlService implements SqlService {
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public XmlSqlService() {
+
     }
 
     public String getSql(String key) throws SqlRetrievalFailureException {
