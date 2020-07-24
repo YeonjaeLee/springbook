@@ -29,6 +29,7 @@ public class OxmTest {
     @Autowired
     Unmarshaller unmarshaller;
 
+    // JaxbTest -> OXM 적용 (JAXB가 아닌 다른 것으로도 바꿔도 코드 수정 필요 없음
     @Test
     public void unmarshallSqlMap() throws XmlMappingException, IOException {
         Source xmlSource = new StreamSource(getClass().getResourceAsStream("sqlmap.xml"));
