@@ -9,7 +9,7 @@
 <!--        <property name="contextPath" value="user.sqlservice.jaxb"/>-->
 <!--    </bean>-->
 
-<!--    Castor 적용-->
+<!--    OXM -> Castor 적용-->
     <bean id="unmarshaller" class="org.springframework.oxm.castor.CastorMarshaller">
         <property name="mappingLocation" value="learningtest/spring/oxm/mapping.xml"/>
     </bean>

@@ -36,16 +36,22 @@
         <property name="dataSource" ref="dataSource"/>
         <property name="sqlService" ref="sqlService"/>
     </bean>
-<!--    프로퍼티는 자기 자신 참조 가능. 수정자 메소드로 주입만 가능하면 된다.-->
-    <bean id="sqlService" class="user.sqlservice.BaseSqlService">
-        <property name="sqlReader" ref="sqlReader"/>
-        <property name="sqlRegistry" ref="sqlRegistry"/>
+<!--    OXM적용. 프로퍼티는 자기 자신 참조 가능. 수정자 메소드로 주입만 가능하면 된다.-->
+    <bean id="sqlService" class="user.sqlservice.OxmSqlService">
+        <property name="unmarshaller" ref="unmarshaller"/>
+        <property name="sqlmap" value="classpath:user/dao/sqlmap.xml"/>
+<!--        <property name="sqlmap" value="file:/yeon/resources/sqlmap.xml"/>-->
+<!--        <property name="sqlmap" value="http://www.yeon.com/resources/sqlmap.xml"/>-->
     </bean>
-    <bean id="sqlReader" class="user.sqlservice.JaxbXmlSqlReader">
-        <property name="sqlmapFile" value="sqlmap.xml"/>
+    <bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+        <property name="contextPath" value="user.sqlservice.jaxb"/>
     </bean>
-    <bean id="sqlRegistry" class="user.sqlservice.HashMapSqlRegistry">
-    </bean>
+<!--    <bean id="sqlReader" class="user.sqlservice.JaxbXmlSqlReader">-->
+<!--        <property name="sqlmapFile" value="sqlmap.xml"/>-->
+<!--    </bean>-->
+<!--    <bean id="sqlRegistry" class="user.sqlservice.HashMapSqlRegistry">-->
+<!--    </bean>-->
+
 <!--    // DI설정이 없을경우 디폴트 적용시. property 적용 가능. 나머진 디폴트-->
 <!--    <bean id="sqlService" class="user.sqlservice.DefaultSqlService"/>-->
     <bean id="accountDao" class="user.dao.AccountDao">
